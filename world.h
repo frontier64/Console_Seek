@@ -40,7 +40,7 @@ bool load(string filename);
 void do_step();
 void add(tile *next, int x, int y);
 void remove(int x, int y);
-void move(int x, int y, int to_x, int to_y);
+bool move(int x, int y, int to_x, int to_y);
 void add_updater(int x, int y);
 void player_command(char c);
 tile*& get(point *p);

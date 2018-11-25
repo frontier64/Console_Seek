@@ -163,4 +163,58 @@ void climber::update(point *self){
 	home_world->move(x, y, x, y + vy);
 }
 
+/*
+ * Finder
+ * Behavior: Moves towards the player
+ * HP: 1
+ * Dangerous: VERY
+ */
+class Finder: public tile, public entity{
+private:
+	point *player;
+	small counter;
+public:
+	void update(point *self);
+	Finder(world *home_world) : tile('V', home_world){
+		counter = 0;
+		passable = false;
+		updatable = true;
+		damage = 1;
+		player = home_world->player;
+		ascii = "";
+		ascii += KBLU;
+		ascii += "F";
+		ascii += KNRM;
+	}
+};
+void Finder::update(point *self){
+	if (counter < 3){
+		counter++;
+		return;
+	} else {
+		counter = 0;
+	}
+	int x = self->x, y = self->y, vx = 0, vy = 0;
+	vx = (x > player->x) ? - 1 : 1;
+	vy = (y > player->y) ? - 1 : 1;
+
+	if (abs(x-player->x) > abs(y-player->y)){
+		entity *move_to;
+		if ((move_to = dynamic_cast<Player*>(home_world->map[x+vx][y]))){
+			move_to->take_damage(damage);
+		}
+		if (home_world->move(x, y, x + vx, y)){
+			return;
+		}
+	}
+	entity *move_to;
+	if ((move_to = dynamic_cast<Player*>(home_world->map[x][y+vy]))){
+		move_to->take_damage(damage);
+	}
+	if (!home_world->move(x, y, x, y + vy)){
+		home_world->move(x, y, x + vx, y);
+	}
+	
+}
+
 #endif

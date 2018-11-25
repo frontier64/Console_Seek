@@ -67,7 +67,7 @@ bool world::load(string filename){
 						new_tile = new tile('&', this);
 						new_tile->passable = true;
 						victory_loc = new point;
-						victory_loc->x = x; victory_loc->y = y; victory_loc->next = NULL;						
+						*victory_loc = {x, y, NULL};					
 						break;
 //Slider						
 					case 'S':
@@ -78,6 +78,10 @@ bool world::load(string filename){
 						new_tile = new climber(this);
 						break;
 
+//Finder
+					case 'F':
+						new_tile = new Finder(this);
+						break;
 //Default, now for walls and floors
 					default:
 						new_tile = new tile(c, this);
@@ -165,7 +169,13 @@ void world::remove(int x, int y){
 	delete map[x][y];
 	map[x][y] = new tile(0, this);
 }
-void world::move(int x, int y, int to_x, int to_y){
+bool world::move(int x, int y, int to_x, int to_y){
+	if (map[to_x][to_y]->passable == false){
+		if (player->x == to_x and player->y == to_y){
+			return true;
+		}
+		return false;
+	}
 	tile *temp;
 	temp = map[to_x][to_y];
 
@@ -178,6 +188,7 @@ void world::move(int x, int y, int to_x, int to_y){
 	if (map[x][y]->updatable){
 		add_updater(x,y);
 	}
+	return true;
 }
 
 void world::player_command(char c){

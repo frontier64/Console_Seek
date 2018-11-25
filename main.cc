@@ -40,7 +40,7 @@ int main(){
 	home_world = new world("test_map.map");
 	input_on();
 	timeval timeout;
-	timeout.tv_usec = 1000 * 500;
+	timeout.tv_usec = 1000 * 200;
 	timeout.tv_sec = 0;
 	fd_set rfds;
 	last_c = 'a';
@@ -51,14 +51,16 @@ int main(){
 		FD_ZERO(&rfds);
 		FD_SET(STDIN_FILENO, &rfds);
 
-		fd_result = select(1, &rfds, NULL, NULL, NULL);
+		fd_result = select(1, &rfds, NULL, NULL, &timeout);
 		if (FD_ISSET(STDIN_FILENO, &rfds)){
 			last_c = getchar();
+			if (last_c == 'q'){
+				running = false;
+			}
+			home_world->player_command(last_c);
+
 		}
-		if (last_c == 'q'){
-			running = false;
-		}
-		home_world->player_command(last_c);
+
 		home_world->do_step();
 
 	}
